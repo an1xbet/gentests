@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Генетическое тестирование бессимптомных взрослых — Практическое руководство</title>
+<style>
+  :root {
+    --primary: #1a5f7a;
+    --primary-dark: #0d3d4d;
+    --primary-light: #e8f4f8;
+    --accent: #2e8b57;
+    --accent-light: #e8f5ee;
+    --warning: #c0392b;
+    --warning-bg: #fdf2f2;
+    --orange: #d35400;
+    --orange-bg: #fef5e7;
+    --research: #7f8c8d;
+    --research-bg: #f4f6f7;
+    --gray: #4a5568;
+    --gray-light: #f7fafc;
+    --border: #e2e8f0;
+    --shadow: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04);
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    line-height: 1.65;
+    color: #2d3748;
+    background: #f0f4f8;
+    font-size: 16px;
+  }
+
+  /* Layout */
+  .layout {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 280px;
+    background: linear-gradient(180deg, var(--primary-dark) 0%, var(--primary) 100%);
+    color: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    overflow-y: auto;
+    z-index: 100;
+    transition: transform 0.3s ease;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+  }
+
+  .sidebar-header {
+    padding: 1.5rem 1.25rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+  }
+
+  .sidebar-header h1 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.35;
+    margin-bottom: 0.35rem;
+  }
+
+  .sidebar-header p {
+    font-size: 0.75rem;
+    opacity: 0.8;
+  }
+
+  .nav-list {
+    list-style: none;
+    padding: 0.75rem 0 2rem;
+  }
+
+  .nav-list a {
+    display: block;
+    padding: 0.55rem 1.25rem;
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-size: 0.88rem;
+    border-left: 3px solid transparent;
+    transition: all 0.2s;
+  }
+
+  .nav-list a:hover,
+  .nav-list a.active {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    border-left-color: #7dd3a0;
+  }
+
+  .nav-list .nav-section {
+    padding: 0.9rem 1.25rem 0.3rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.55;
+    font-weight: 600;
+  }
+
+  /* Main content */
+  .main {
+    margin-left: 280px;
+    flex: 1;
+    padding: 0 0 3rem;
+    max-width: 1100px;
+  }
+
+  /* Mobile toggle */
+  .menu-toggle {
+    display: none;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 200;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    font-size: 1.3rem;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+  }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 60%, #2e8b57 100%);
+    color: #fff;
+    padding: 2.5rem 2rem 2rem;
+    margin-bottom: 0;
+  }
+
+  .hero h1 {
+    font-size: 1.85rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+
+  .hero p {
+    opacity: 0.9;
+    font-size: 1.05rem;
+    max-width: 700px;
+  }
+
+  /* TOC quick buttons */
+  .toc-bar {
+    background: #fff;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .toc-btn {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    border: 1px solid transparent;
+    padding: 0.4rem 0.85rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .toc-btn:hover {
+    background: var(--primary);
+    color: #fff;
+  }
+
+  /* Content sections */
+  .content {
+    padding: 1.5rem 2rem;
+  }
+
+  section {
+    margin-bottom: 2.5rem;
+    scroll-margin-top: 80px;
+  }
+
+  h2 {
+    font-size: 1.55rem;
+    color: var(--primary-dark);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+    color: var(--primary);
+    margin: 1.5rem 0 0.75rem;
+  }
+
+  h4 {
+    font-size: 1.05rem;
+    color: var(--gray);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  p { margin-bottom: 0.85rem; }
+
+  ul, ol {
+    margin: 0.5rem 0 1rem 1.4rem;
+  }
+
+  li { margin-bottom: 0.35rem; }
+
+  strong { color: #1a202c; }
+
+  a { color: var(--primary); }
+
+  /* Cards */
+  .card {
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+
+  .card-highlight {
+    border-left: 4px solid var(--primary);
+  }
+
+  .card-green {
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent);
+  }
+
+  .card-warning {
+    background: var(--warning-bg);
+    border-left: 4px solid var(--warning);
+  }
+
+  .card-orange {
+    background: var(--orange-bg);
+    border-left: 4px solid var(--orange);
+  }
+
+  .card-research {
+    background: var(--research-bg);
+    border-left: 4px solid var(--research);
+  }
+
+  .card-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  /* Badges */
+  .badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-right: 0.3rem;
+  }
+
+  .badge-green { background: #d4edda; color: #155724; }
+  .badge-red { background: #f8d7da; color: #721c24; }
+  .badge-orange { background: #fff3cd; color: #856404; }
+  .badge-gray { background: #e2e3e5; color: #383d41; }
+  .badge-blue { background: #cce5ff; color: #004085; }
+
+  /* Tables */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 1rem 0 1.5rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: #fff;
+    box-shadow: var(--shadow);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    min-width: 600px;
+  }
+
+  th {
+    background: var(--primary);
+    color: #fff;
+    padding: 0.75rem 0.9rem;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 0.7rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) td { background: var(--gray-light); }
+  tr:hover td { background: var(--primary-light); }
+
+  /* Accordion */
+  .accordion {
+    margin: 1rem 0;
+  }
+
+  .acc-item {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 0.6rem;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .acc-header {
+    padding: 0.9rem 1.2rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    color: var(--primary-dark);
+    background: #fff;
+    transition: background 0.2s;
+    user-select: none;
+  }
+
+  .acc-header:hover { background: var(--primary-light); }
+
+  .acc-header .icon {
+    font-size: 1.1rem;
+    transition: transform 0.25s;
+    color: var(--primary);
+  }
+
+  .acc-item.open .acc-header .icon { transform: rotate(180deg); }
+
+  .acc-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+  }
+
+  .acc-item.open .acc-body {
+    max-height: 5000px;
+  }
+
+  .acc-content {
+    padding: 0 1.2rem 1.2rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 0.5rem;
+  }
+
+  .tab-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    background: transparent;
+    color: var(--gray);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: 8px 8px 0 0;
+    transition: all 0.2s;
+  }
+
+  .tab-btn.active {
+    background: var(--primary);
+    color: #fff;
+  }
+
+  .tab-btn:hover:not(.active) {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Checklist */
+  .checklist {
+    list-style: none;
+    margin-left: 0;
+  }
+
+  .checklist li {
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.4rem;
+    background: #fff;
+    border-radius: 8px;
+    border-left: 3px solid var(--primary);
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+  }
+
+  .checklist li::before {
+    content: "✓";
+    color: var(--accent);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* Algorithm steps */
+  .algo-step {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: flex-start;
+  }
+
+  .algo-num {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  .algo-body {
+    flex: 1;
+    background: #fff;
+    padding: 0.9rem 1.1rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+
+  /* Callouts */
+  .callout {
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius);
+    margin: 1rem 0;
+    font-size: 0.95rem;
+  }
+
+  .callout-green {
+    background: var(--accent-light);
+    border: 1px solid #a3d9b1;
+  }
+
+  .callout-red {
+    background: var(--warning-bg);
+    border: 1px solid #f5c6cb;
+  }
+
+  .callout-orange {
+    background: var(--orange-bg);
+    border: 1px solid #f5d0a9;
+  }
+
+  .callout-gray {
+    background: var(--research-bg);
+    border: 1px solid #d5d8dc;
+  }
+
+  .callout strong { display: block; margin-bottom: 0.25rem; }
+
+  /* Footer */
+  footer {
+    background: var(--primary-dark);
+    color: rgba(255,255,255,0.85);
+    text-align: center;
+    padding: 1.5rem;
+    font-size: 0.9rem;
+    margin-top: 2rem;
+  }
+
+  footer p { margin: 0; opacity: 0.9; }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .sidebar {
+      transform: translateX(-100%);
+    }
+    .sidebar.open {
+      transform: translateX(0);
+    }
+    .main { margin-left: 0; }
+    .menu-toggle { display: flex; align-items: center; justify-content: center; }
+    .hero { padding: 3.5rem 1.25rem 1.5rem; }
+    .content { padding: 1.25rem 1rem; }
+    .toc-bar { padding: 1rem; }
+    h2 { font-size: 1.3rem; }
+  }
+
+  /* Print */
+  @media print {
+    .sidebar, .menu-toggle, .toc-bar { display: none; }
+    .main { margin-left: 0; }
+  }
+
+  /* Smooth scroll */
+  html { scroll-behavior: smooth; }
+
+  /* Class icons in headers */
+  .section-icon {
+    font-size: 1.3rem;
+  }
+</style>
+</head>
+<body>
+
+<button class="menu-toggle" id="menuToggle" aria-label="Меню">☰</button>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h1>Генетическое тестирование</h1>
+      <p>Бессимптомные взрослые</p>
+    </div>
+    <ul class="nav-list">
+      <li class="nav-section">Начало</li>
+      <li><a href="#intro">Введение</a></li>
+
+      <li class="nav-section">1. Генетические тесты</li>
+      <li><a href="#methods">1.1 Методы</a></li>
+      <li><a href="#how">1.2 Как проводятся</a></li>
+      <li><a href="#value">1.3 Практическая ценность</a></li>
+      <li><a href="#clinical-vs-consumer">Клинические vs Consumer</a></li>
+
+      <li class="nav-section">2. Сравнение тестов</li>
+      <li><a href="#europe">Европа</a></li>
+      <li><a href="#cis">Страны СНГ</a></li>
+      <li><a href="#checklist-lab">Чек-лист лаборатории</a></li>
+
+      <li class="nav-section">3–4. Практика</li>
+      <li><a href="#lifestyle">Бытовые применения</a></li>
+      <li><a href="#algorithm">Алгоритм приёма</a></li>
+      <li><a href="#sources">Источники</a></li>
+    </ul>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="hero">
+      <h1>Генетическое тестирование бессимптомных взрослых</h1>
+      <p>Практическое руководство для врачей превентивной медицины. Европа и СНГ.</p>
+    </header>
+
+    <!-- Quick TOC -->
+    <div class="toc-bar">
+      <a class="toc-btn" href="#intro">Введение</a>
+      <a class="toc-btn" href="#methods">Методы</a>
+      <a class="toc-btn" href="#how">Как проводятся</a>
+      <a class="toc-btn" href="#value">Ценность</a>
+      <a class="toc-btn" href="#clinical-vs-consumer">Клинич. vs Consumer</a>
+      <a class="toc-btn" href="#europe">Европа</a>
+      <a class="toc-btn" href="#cis">СНГ</a>
+      <a class="toc-btn" href="#lifestyle">Бытовые тесты</a>
+      <a class="toc-btn" href="#algorithm">Алгоритм</a>
+    </div>
+
+    <div class="content">
+
+      <!-- ========== INTRODUCTION ========== -->
+      <section id="intro">
+        <h2><span class="section-icon">📋</span> Введение</h2>
+        <div class="card card-highlight">
+          <p>Для бессимптомного взрослого практически значимы <strong>два типа генетических результатов</strong>:</p>
+          <ul>
+            <li><strong>Редкие «моногенные» варианты с высоким риском</strong> — BRCA1/2, синдром Линча, семейная гиперхолестеринемия и др.</li>
+            <li><strong>Фармакогенетика (PGx)</strong> — варианты, влияющие на метаболизм и безопасность лекарств.</li>
+          </ul>
+          <p class="callout callout-gray" style="margin-top:1rem;margin-bottom:0">
+            <strong>Полигенные оценки риска (PRS)</strong> пока остаются преимущественно исследовательским инструментом и не должны определять решения о скрининге вне исследований.
+          </p>
+        </div>
+      </section>
+
+      <!-- ========== 1.1 METHODS ========== -->
+      <section id="methods">
+        <h2><span class="section-icon">🧬</span> 1.1. Какие методы существуют</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Метод</th>
+                <th>Что это и что анализирует</th>
+                <th>Когда уместен у здоровых</th>
+                <th>Плюсы</th>
+                <th>Минусы</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Таргетные панели</strong></td>
+                <td>Секвенирование (NGS) заранее выбранного набора генов: от узкой BRCA-панели до расширенных панелей на 50–200 и более генов наследственного рака. Отдельные панели — для кардиомиопатий/аритмий и дислипидемий.</td>
+                <td>Отягощённая семейная история рака или кардиопатии; известная семейная мутация (каскадное тестирование); раннее начало заболевания у родственников.</td>
+                <td>Высокая глубина покрытия (≥ 50–100×); ниже доля VUS; дешевле WES/WGS; ответ на понятный клинический вопрос.</td>
+                <td>Видит только то, что в панели; панели лабораторий отличаются; «слепые зоны» (PMS2 из-за псевдогена, GC-богатые участки, протяжённые перестройки).</td>
+              </tr>
+              <tr>
+                <td><strong>WES (экзом)</strong></td>
+                <td>Секвенирование всех белок-кодирующих участков (~1–2% генома, где большинство известных болезнетворных мутаций).</td>
+                <td>Скрининг «вторичных находок» по ACMG SF v3.3 (в v3.3 добавлены ABCD1, CYP27A1, PLN); неясная наследственная картина.</td>
+                <td>Широкий охват; можно переанализировать позже.</td>
+                <td>Хуже выявляет протяжённые делеции/дупликации и сложные участки; больше VUS; нужна экспертная интерпретация; пенетрантность у людей без семейного анамнеза, вероятно, ниже опубликованной. В Европе подход к вторичным находкам осторожнее: ряд позиций (в т.ч. ESHG) не поддерживает широкий «оппортунистический» поиск у здоровых.</td>
+              </tr>
+              <tr>
+                <td><strong>WGS (геном)</strong></td>
+                <td>Секвенирование всего генома, включая некодирующие участки и структурные изменения.</td>
+                <td>Те же показания, что и WES; интерес пациента; исследовательские программы.</td>
+                <td>Самый полный охват; равномернее покрытие; лучше структурные варианты.</td>
+                <td>Дороже; больше данных и VUS; клинической пользы сверх панели/WES у здоровых пока не доказано; требуется строгое информированное согласие.</td>
+              </tr>
+              <tr>
+                <td><strong>Полигенные оценки риска (PRS)</strong></td>
+                <td>Суммирование эффектов сотен/миллионов частых SNP с малым эффектом; результат — положение относительно популяции (персентиль).</td>
+                <td>В основном исследования и пилотные программы. В eMERGE (США) — 10 PRS (астма, ФП, РМЖ, ХБП, ИБС, гиперхолестеринемия, ожирение, рак простаты, СД1 и СД2). В Европе — пилоты (CanRisk, финский GeneRISK).</td>
+                <td>Может уточнить риск при сочетании с семейным анамнезом и клиническими факторами.</td>
+                <td>Обучены в основном на европейских когортах; валидация для других популяций ограничена; не заменяют моногенное тестирование; влияние на поведение и исходы ограничено; страхование, как правило, не покрывает.</td>
+              </tr>
+              <tr>
+                <td><strong>Фармакогенетика (PGx)</strong></td>
+                <td>Варианты генов, влияющих на метаболизм и безопасность лекарств: CYP2D6, CYP2C19, CYP2C9, SLCO1B1, DPYD, TPMT/NUDT15, UGT1A1, VKORC1 и др.</td>
+                <td>Предэмптивное тестирование у пациентов, которые будут принимать несколько лекарств с рекомендациями CPIC/DPWG; перед конкретным препаратом.</td>
+                <td>Результат пожизненный и используется многократно; для ряда пар «ген–препарат» есть чёткие рекомендации CPIC/DPWG. В исследовании U-PGx (Европа) 12-генная панель снизила клинически значимые НР примерно на 30%.</td>
+                <td>Большинство руководств не рекомендует рутинное тестирование всем; «действенный» результат встречается не у всех; нужна интеграция в карту и знание, как менять терапию.</td>
+              </tr>
+              <tr>
+                <td><strong>Митохондриальное секвенирование</strong></td>
+                <td>Анализ митохондриальной ДНК (мтДНК), наследуемой по материнской линии.</td>
+                <td>У здоровых взрослых — практически не показано. Уместно при семейной истории митохондриальных болезней или как часть WGS/WES.</td>
+                <td>Выявляет редкие митохондриальные заболевания.</td>
+                <td>Низкая отдача у бессимптомных; гетероплазмия усложняет интерпретацию; результат может отличаться между тканями.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout callout-green">
+          <strong>✅ Практический вывод</strong>
+          У здорового взрослого с отягощённым анамнезом первым выбором является <strong>панель</strong> (рак ± сердце): она отвечает на конкретный вопрос и даёт меньше «шума». WES/WGS стоит обсуждать, когда пациент заинтересован в широком поиске вторичных находок и готов к риску неопределённых результатов. PRS пока не должен определять решения о скрининге. PGx имеет смысл, когда вы будете менять назначения.
+        </div>
+      </section>
+
+      <!-- ========== CLINICAL VS CONSUMER ========== -->
+      <section id="clinical-vs-consumer">
+        <h2><span class="section-icon">⚖️</span> Клинические тесты vs Consumer-тесты</h2>
+
+        <p>Принципиальная разница: <strong>клинический тест</strong> отвечает на медицинский вопрос и даёт результат, на который можно опираться при лечении и наблюдении; <strong>consumer-тест</strong> — продукт «для интереса», который продаётся напрямую покупателю.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Параметр</th>
+                <th>Клинический тест</th>
+                <th>Consumer-тест</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Кто назначает</strong></td>
+                <td>Врач или клинический генетик/консультант. В ряде стран закон требует врачебного назначения и дотестового консультирования.</td>
+                <td>Пациент сам, без врача.</td>
+              </tr>
+              <tr>
+                <td><strong>Технология</strong></td>
+                <td>Чаще NGS выбранных генов «от начала до конца», включая делеции/дупликации.</td>
+                <td>Часто микрочип: только избранные точки.</td>
+              </tr>
+              <tr>
+                <td><strong>Полнота ответа</strong></td>
+                <td>Полный анализ гена (с явными исключениями — см. ограничения лаборатории).</td>
+                <td>Часто несколько вариантов из тысяч известных (например, 3 «основательских» варианта BRCA1/2).</td>
+              </tr>
+              <tr>
+                <td><strong>Интерпретация</strong></td>
+                <td>ACMG/AMP-классификация, проверка специалистом, часто входит консультация генетика.</td>
+                <td>Автоматизированный отчёт в приложении; качество сильно разное.</td>
+              </tr>
+              <tr>
+                <td><strong>Контроль качества</strong></td>
+                <td>Аккредитация ISO 15189 (UKAS, DAkkS, COFRAC и др.), участие во внешней оценке качества (EMQN, GenQA). Для лабораторий СНГ аккредитацию нужно проверять отдельно.</td>
+                <td>Не всегда; в ЕС диагностические изделия подпадают под IVDR 2017/746, но статус конкретного продукта нужно уточнять.</td>
+              </tr>
+              <tr>
+                <td><strong>Типичная цель</strong></td>
+                <td>Диагностика / ранняя профилактика с планом действий.</td>
+                <td>Интерес, происхождение, «черты», общие риски.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card card-orange">
+          <div class="card-title">⚠️ Когда consumer-тест опасен</div>
+          <ol>
+            <li><strong>«Отрицательный» результат</strong> воспринимается как «риска нет» — пациент пропускает скрининг при отягощённом анамнезе.</li>
+            <li>Пациент меняет лечение, диету или дозу лекарства по непроверенному отчёту.</li>
+            <li>Позитивный результат приходит без консультации — тревога, паника, попытки профилактических операций по неподтверждённому результату.</li>
+          </ol>
+        </div>
+
+        <div class="card card-warning">
+          <div class="card-title">🔴 Ложноположительные результаты</div>
+          <p>Редкие патогенные варианты на чипе часто оказываются ложноположительными. <strong>Любой положительный consumer-результат нужно подтвердить</strong> в аккредитованной лаборатории вторым методом на новом образце до любых решений.</p>
+        </div>
+
+        <div class="callout callout-gray">
+          <strong>Данные опроса</strong>
+          В опросе 30 пользователей consumer-тестов на наследственный рак (Kilbride 2024) 25 не консультировались с врачом до теста, многие отметили негативные эмоции после результата. Исследование проведено в США — переносить цифры на Европу и СНГ нужно с осторожностью.
+        </div>
+
+        <p><strong>Пациент принёс готовый отчёт.</strong> Требуется разобрать, что именно проверялось, собрать семейный анамнез и при необходимости направить на клинический тест.</p>
+      </section>
+
+      <!-- ========== 1.2 HOW TESTS ARE DONE ========== -->
+      <section id="how">
+        <h2><span class="section-icon">🔬</span> 1.2. Как проводятся тесты</h2>
+
+        <h3>Биоматериал</h3>
+        <div class="card">
+          <p><strong>Кровь</strong> (пробирка с ЭДТА/EDTA; объём зависит от лаборатории) — «золотой стандарт».</p>
+          <p><strong>Слюна и буккальный мазок</strong> удобнее для пациента и принимаются многими лабораториями. Исследование BMC Genomics 2024 показало: при строгом протоколе слюна эквивалентна крови для WES и WGS (в слюне больше ДНК бактерий, но на точность определения вариантов при валидированном протоколе это не влияет).</p>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Ситуация</th>
+                <th>Что выбрать</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Обычный бессимптомный пациент</td>
+                <td>Слюна/мазок, если лаборатория валидировала этот тип образца; иначе кровь</td>
+              </tr>
+              <tr>
+                <td>Переливания крови, трансплантация костного мозга/органов, химиотерапия</td>
+                <td>Проверить у лаборатории: это может искажать результат; часто нужен другой материал или перенос срока</td>
+              </tr>
+              <tr>
+                <td>Слюна</td>
+                <td>Не есть, не пить, не курить 30 минут до сбора (типичная инструкция; уточнить в инструкции конкретной лаборатории)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Методы анализа</h3>
+        <div class="accordion" id="methods-acc">
+          <div class="acc-item">
+            <div class="acc-header" onclick="toggleAcc(this)">
+              Генотипирование (микрочипы)
+              <span class="icon">▼</span>
+            </div>
+            <div class="acc-body">
+              <div class="acc-content">
+                <p>Проверяется заранее известный набор точек (от тысяч до миллионов). Используется для PRS и consumer-тестов. Редкие патогенные варианты на чипе часто дают ложноположительные результаты, поэтому важные находки подтверждают вторым методом.</p>
+              </div>
+            </div>
+          </div>
+          <div class="acc-item">
+            <div class="acc-header" onclick="toggleAcc(this)">
+              Таргетное секвенирование / NGS
+              <span class="icon">▼</span>
+            </div>
+            <div class="acc-body">
+              <div class="acc-content">
+                <p>ДНК «разрезается» на короткие фрагменты, нужные гены «вылавливаются» и читаются много раз («глубина 50×» = каждая буква прочитана в среднем 50 раз). Это стандарт для клинических панелей.</p>
+              </div>
+            </div>
+          </div>
+          <div class="acc-item">
+            <div class="acc-header" onclick="toggleAcc(this)">
+              ПЦР / MLPA на «основательские» варианты
+              <span class="icon">▼</span>
+            </div>
+            <div class="acc-body">
+              <div class="acc-content">
+                <p>Дешёвые точечные тесты на несколько известных мутаций. В СНГ распространены панели на частые «славянские» варианты BRCA1/2, CHEK2 и NBN. Это быстрый первый шаг, но <strong>не замена секвенированию</strong>: отрицательный результат не исключает другие мутации.</p>
+              </div>
+            </div>
+          </div>
+          <div class="acc-item">
+            <div class="acc-header" onclick="toggleAcc(this)">
+              WES / WGS
+              <span class="icon">▼</span>
+            </div>
+            <div class="acc-body">
+              <div class="acc-content">
+                <p>То же NGS, но без предварительного выбора генов; анализ конкретных генов задаётся «виртуальным» фильтром уже при интерпретации.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>Какие варианты обнаруживаются</h3>
+        <p>Замены одной буквы (SNV), малые вставки/выпадения (indel), делеции/дупликации целых экзонов (CNV — важно, например, для синдрома Линча и BRCA1). Не каждый тест видит всё: у разных лабораторий есть гены с частичным анализом, а сложные перестройки и повторяющиеся участки могут быть пропущены.</p>
+
+        <h3>Как результат интерпретируется</h3>
+        <p>Лаборатория сравнивает каждый вариант с базами данных и публикациями по критериям ACMG/AMP и относит его к одному из пяти классов. В Европе дополнительно применяются национальные уточнения (например, рекомендации ACGS в Великобритании, для BRCA1/2 — ENIGMA). Какие именно критерии использованы и пересматривается ли класс со временем, нужно уточнять в описании лаборатории.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Класс</th>
+                <th>Что означает простыми словами</th>
+                <th>Что делать врачу</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="badge badge-red">P (патогенный)</span></td>
+                <td>Вариант достоверно вызывает заболевание / повышает риск</td>
+                <td>Наблюдение по руководству по гену, консультация генетика, каскадное тестирование родственников</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-orange">LP (вероятно патогенный)</span></td>
+                <td>Примерно &gt;90% уверенности, что вариант патогенный</td>
+                <td>Как P (обычно с правилом: действовать так же)</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-gray">VUS (неопределённого значения)</span></td>
+                <td>Пока недостаточно данных</td>
+                <td><strong>Не менять тактику</strong>; оценивать по семейному анамнезу; не тестировать родственников «на VUS»; добавить на переоценку (класс может измениться)</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-green">LB / B (доброкачественные)</span></td>
+                <td>Безопасны</td>
+                <td>Обычно в отчёт не включаются</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Кому назначать тест, а кому не надо</h3>
+        <div class="card card-green">
+          <div class="card-title">✅ Показания</div>
+          <ul>
+            <li>Родственник с уже найденным P/LP-вариантом — тест на этот конкретный вариант (самое дешёвое и точное)</li>
+            <li>Семейный анамнез рака молочной железы / яичника / простаты / поджелудочной / колоректального / эндометрия, ранний возраст диагноза, несколько близких родственников, полипоз в молодом возрасте</li>
+            <li>Семейный анамнез раннего ИМ / внезапной смерти / кардиомиопатии / аневризмы аорты или ХС ЛПНП ≥ 4,9 ммоль/л (≈190 мг/дл) — семейная гиперхолестеринемия</li>
+            <li>Пациент, который принимает или будет принимать препараты с рекомендациями CPIC/DPWG (статины, клопидогрел, фторурацил, тиопурины, антидепрессанты) → PGx</li>
+            <li>Пациент готов к предтестовой консультации и понимает, что может получить VUS или семейно значимый результат</li>
+          </ul>
+        </div>
+        <p>Формальные критерии показаний и процесс консультации — в обзоре NCI PDQ «Рак: генетика» (шесть шагов консультации: оценка риска, обучение, информированное согласие, интерпретация, поддержка). Аутосомно-доминантное наследование значит: у каждого родителя, брата/сестры и ребёнка носителя варианта шанс 50%.</p>
+      </section>
+
+      <!-- ========== 1.3 VALUE ========== -->
+      <section id="value">
+        <h2><span class="section-icon">💡</span> 1.3. Практическая ценность</h2>
+
+        <p>Результат ценен только тогда, когда он <strong>меняет действия</strong>: скрининг, операцию, терапию или обследование родственников.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Пациенту</th>
+                <th>Врачу</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Понимание причины семейного анамнеза; возможность раннего и усиленного наблюдения; информация для семьи</td>
+                <td>Обоснование начала скрининга раньше стандартного возраста и в иной модальности; решения по химиопрофилактике и риск-редуцирующим операциям</td>
+              </tr>
+              <tr>
+                <td>Выбор лекарств и доз без «проб и ошибок» (PGx)</td>
+                <td>Простая чёткая ветка решения для ряда препаратов (CPIC/DPWG)</td>
+              </tr>
+              <tr>
+                <td>Риск непонятных результатов (VUS) и тревоги — нужно предупредить заранее</td>
+                <td>Обоснование дальнейших шагов при неясном анамнезе</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Какие риски можно выявить до симптомов</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Группа</th>
+                <th>Примеры генов → синдром</th>
+                <th>Что может измениться в ведении</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Наследственный рак молочной железы / яичника</strong></td>
+                <td>BRCA1/2, PALB2, ATM, CHEK2, TP53, PTEN</td>
+                <td>Ранний старт и повышенная частота наблюдения (МРТ молочных желез и др.), обсуждение профилактических операций для некоторых генов</td>
+              </tr>
+              <tr>
+                <td><strong>Синдром Линча и полипозы</strong></td>
+                <td>MLH1, MSH2, MSH6, PMS2, EPCAM, APC, MUTYH</td>
+                <td>Колоноскопия с раннего возраста и каждые 1–2 года, гинекологическое наблюдение</td>
+              </tr>
+              <tr>
+                <td><strong>Кардиомиопатии, аритмии, аневризмы</strong></td>
+                <td>MYH7, MYBPC3, LMNA, KCNQ1, KCNH2, SCN5A, FBN1</td>
+                <td>ЭКГ / ЭхоКГ / МРТ сердца, ограничения нагрузки и лекарств, каскадное обследование родственников</td>
+              </tr>
+              <tr>
+                <td><strong>Семейная гиперхолестеринемия</strong></td>
+                <td>LDLR, APOB, PCSK9</td>
+                <td>Ранняя и агрессивная статиновая терапия, обследование родственников</td>
+              </tr>
+              <tr>
+                <td><strong>Фармакогенетика</strong></td>
+                <td>CYP2C19 (клопидогрел), SLCO1B1 (статины), DPYD (фторурацил), TPMT/NUDT15 (тиопурины)</td>
+                <td>Выбор препарата / дозы по CPIC/DPWG и информации в инструкции препарата (в ЕС — SmPC/EMA)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>PGx подробнее</h3>
+        <div class="card">
+          <p>Большинство руководств <strong>не рекомендует</strong> рутинное PGx-тестирование; решение зависит от частоты «действенных» результатов, тяжести осложнения, наличия альтернативы, стоимости и срока ответа.</p>
+          <p><strong>Три модели:</strong> предэмптивное (прозапас), перед терапией (предлечебное), реактивное (после нежелательной реакции).</p>
+          <p>Для бессимптомного взрослого рациональный повод — пациент с хронической полифармацией или планируемой терапией препаратами с рекомендациями CPIC/DPWG. Результат нужно внести в карту и в список аллергий/непереносимости.</p>
+          <p>В Европе наиболее развитая практика — в <strong>Нидерландах</strong>, где рекомендации DPWG встроены в аптечные системы. По СНГ данных нет.</p>
+        </div>
+
+        <h3>PRS</h3>
+        <div class="callout callout-gray">
+          <strong>🔬 Исследовательский статус</strong>
+          PRS для рака приемлем для пациентов и врачей, но влияние на психологические исходы и поведение небольшое; данных по неевропейским популяциям недостаточно. Редакционная статья David &amp; Palaniappan (2025): PRS-отчёт не включает моногенные варианты (BRCA1/2) — «нормальный» PRS не исключает большой риск. Систематические обзоры не нашли однозначных доказательств клинической пользы ни одного PRS. В eMERGE (Nature Medicine 2024) оценка калибруется по генетическому происхождению и дополняется клиническими факторами — это исследовательская программа, не рутинная практика.
+        </div>
+
+        <h3>Ограничения методов</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Метод</th>
+                <th>Что не предскажет / ограничения</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Панели</strong></td>
+                <td>Не видят гены вне панели, не оценивают общий полигенный риск; «негативный» результат не означает «риска нет» — остаётся популяционный/семейный риск; частичные гены и слепые зоны (ограничения по экзонам, псевдогены, GC-богатые зоны, протяжённые indel — как правило, перечислены в описании теста)</td>
+              </tr>
+              <tr>
+                <td><strong>WES/WGS</strong></td>
+                <td>Много данных — много VUS и вторичных находок; пенетрантность у бессимптомных ниже (ACMG SF v3.3); не все лаборатории клинически валидировали пайплайн</td>
+              </tr>
+              <tr>
+                <td><strong>PRS</strong></td>
+                <td>Вероятностный, не диагностический тест; точность падает вне популяций, на которых обучены модели; слабая привязка к конкретным действиям; малое влияние на поведение</td>
+              </tr>
+              <tr>
+                <td><strong>PGx</strong></td>
+                <td>Предсказывает метаболизм, а не все исходы; не заменяет мониторинг и учёт взаимодействий; при сложных комбинациях возможны «неопределённые» диплотипы</td>
+              </tr>
+              <tr>
+                <td><strong>Все</strong></td>
+                <td>Не предсказывают возраст и тяжесть проявлений; пенетрантность неполная («вариант есть ≠ болезнь будет»); классификация вариантов меняется со временем</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ========== EUROPE ========== -->
+      <section id="europe">
+        <h2><span class="section-icon">🇪🇺</span> Сравнение тестов: Европа</h2>
+
+        <div class="card card-highlight">
+          <p>В Европе генетическое тестирование бессимптомных взрослых в значительной степени идёт через <strong>национальные службы клинической генетики</strong> или аккредитованные частные лаборатории. Подход к «вторичным находкам» (secondary findings) при WES/WGS, как правило, осторожнее, чем в США: ряд национальных и профессиональных позиций (в т.ч. ESHG) не поддерживает широкий «оппортунистический» поиск у здоровых.</p>
+        </div>
+
+        <h3>Ключевые особенности европейского подхода</h3>
+        <ul>
+          <li><strong>Аккредитация:</strong> ISO 15189 + участие во внешней оценке качества (EMQN, GenQA). Национальные органы: UKAS (Великобритания), DAkkS (Германия), COFRAC (Франция) и др.</li>
+          <li><strong>Классификация вариантов:</strong> ACMG/AMP + национальные уточнения (ACGS в UK, ENIGMA для BRCA1/2).</li>
+          <li><strong>PGx:</strong> Наиболее развитая интеграция — Нидерланды (рекомендации DPWG встроены в аптечные системы). Европейское многоцентровое исследование U-PGx: предэмптивная 12-генная панель снизила частоту клинически значимых нежелательных реакций примерно на 30%.</li>
+          <li><strong>PRS:</strong> Пилотные и исследовательские проекты (CanRisk для рака молочной железы, финский GeneRISK). Не рутинная практика.</li>
+          <li><strong>Consumer-тесты:</strong> Диагностические изделия подпадают под Регламент IVDR 2017/746; статус конкретного продукта нужно уточнять. Качество интерпретации сильно варьирует.</li>
+          <li><strong>Семейная гиперхолестеринемия:</strong> В ряде стран есть национальные программы выявления FH; руководства EAS/ESC.</li>
+        </ul>
+
+        <div class="callout callout-green">
+          <strong>✅ Практический путь в Европе</strong>
+          Для пациента с отягощённым анамнезом — через национальную службу клинической генетики или аккредитованную частную лабораторию с NGS-панелью (анализ делеций/дупликаций + консультация генетика).
+        </div>
+
+        <div class="card card-research">
+          <div class="card-title">🔬 Исследовательские программы</div>
+          <ul>
+            <li><strong>CanRisk</strong> — модель риска рака молочной железы (Великобритания и др.)</li>
+            <li><strong>GeneRISK</strong> — финский пилот по PRS</li>
+            <li><strong>U-PGx</strong> — европейское исследование предэмптивной фармакогенетики</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ========== CIS ========== -->
+      <section id="cis">
+        <h2><span class="section-icon">🗺️</span> Сравнение тестов: страны СНГ</h2>
+
+        <h3>Таблица 2а. Какие лаборатории и модели доступа существуют</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Страна</th>
+                <th>Крупные лаборатории и сети</th>
+                <th>Как обычно получить тест</th>
+                <th>Оплата</th>
+                <th>Статус данных</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Россия</strong></td>
+                <td>Коммерческие: ИНВИТРО, Гемотест, КДЛ, ДНКом, Genetico, Геномед, Genotek. Государственные: медико-генетические консультации, МГНЦ им. Бочкова и др.</td>
+                <td>Многие коммерческие лаборатории принимают заказ напрямую от пациента; консультация генетика чаще рекомендуется, чем обязательна.</td>
+                <td>Как правило, самостоятельная оплата (₽)</td>
+                <td>Данные по ценам и составам — по сайтам Genetico, Геномед, публикациям о Гемотесте и Genotek</td>
+              </tr>
+              <tr>
+                <td><strong>Казахстан</strong></td>
+                <td>ИНВИТРО (Алматы) — точечная панель на «основательские» варианты</td>
+                <td>Заказ через каталог лаборатории; страница ориентирована на врачей</td>
+                <td>Самостоятельная оплата (тг)</td>
+                <td>Найдена одна лаборатория; других не проверялось</td>
+              </tr>
+              <tr>
+                <td><strong>Беларусь</strong></td>
+                <td>Публичных коммерческих предложений с ценами не найдено</td>
+                <td>Практический путь для бессимптомного — через онколога/генетика</td>
+                <td>Не проверялась</td>
+                <td>Данных нет</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Таблица 2б. Примеры клинических NGS-панелей и точечных тестов (СНГ)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Тест / компания</th>
+                <th>Страна</th>
+                <th>Что входит</th>
+                <th>Технология и глубина</th>
+                <th>Интерпретация</th>
+                <th>Цена</th>
+                <th>Кому рекомендовать</th>
+                <th>Ограничения</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Genetico — «Наследственный рак»</strong></td>
+                <td>Россия</td>
+                <td>207 генов</td>
+                <td>NGS; венозная кровь; срок 35 раб. дней; глубина на странице не указана</td>
+                <td>Специалист интерпретирует; у здоровых включаются P/LP; консультация генетика рекомендована</td>
+                <td>46 000 ₽</td>
+                <td>Широкий поиск при семейном анамнезе рака, если пациент понимает риск VUS</td>
+                <td>Сырые данные (fastq) не входят в цену; чем шире панель, тем больше генов со слабой клинической значимостью</td>
+              </tr>
+              <tr>
+                <td><strong>Геномед — «Наследственный рак молочной железы» (код 0788)</strong></td>
+                <td>Россия</td>
+                <td>24 гена: BRCA1/2, PALB2, CHEK2, BARD1, BRIP1, CDH1, RAD51C/D, TP53, PTEN, STK11, NBN и др.; из генов Линча — MLH1, MSH6, PMS2, EPCAM</td>
+                <td>NGS, покрытие ≥70× кодирующих регионов и сплайс-сайтов; срок 20 раб. дней</td>
+                <td>Не указано на странице</td>
+                <td>20 000 ₽</td>
+                <td>Женщины с анамнезом рака молочной железы/яичника на бюджетном уровне</td>
+                <td>Нет ATM, MSH2, MUTYH, APC в списке (по перечню на странице); уточнить наличие CNV-анализа</td>
+              </tr>
+              <tr>
+                <td><strong>ИНВИТРО — BRCA1, BRCA2, CHEK2, NBN</strong></td>
+                <td>Казахстан (Алматы)</td>
+                <td>10 «основательских» вариантов: BRCA1 (6), BRCA2 (1), CHEK2 (2), NBN (1), типичных для российской популяции</td>
+                <td>MLPA + PCR-PDAF (не полное секвенирование); срок до 13 раб. дней; кровь EDTA</td>
+                <td>Не указано</td>
+                <td>55 990 тг + 1 390 тг за забор крови</td>
+                <td>Быстрый первичный скрининг на известные «славянские» мутации; проверка варианта у родственников</td>
+                <td>Только 10 точек: «отрицательный» результат <strong>не исключает</strong> другие мутации BRCA1/2 и других генов; не подходит для не-славянских популяций</td>
+              </tr>
+              <tr>
+                <td><strong>Гемотест — ПЦР на BRCA1/BRCA2 и NGS-тест BRCA1/2</strong></td>
+                <td>Россия</td>
+                <td>ПЦР; NGS: полный анализ BRCA1/2</td>
+                <td>ПЦР и NGS</td>
+                <td>—</td>
+                <td>19 500 ₽ (NGS)</td>
+                <td>Если нужен узкий вопрос по BRCA1/2</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td><strong>Российские «точечные» панели BRCA</strong> (КДЛ, ДНКом и др.)</td>
+                <td>Россия</td>
+                <td>Набор частых вариантов (по названиям услуг)</td>
+                <td>—</td>
+                <td>—</td>
+                <td>—</td>
+                <td>—</td>
+                <td>Те же ограничения, что у ИНВИТРО (только избранные точки) — вывод по аналогии, требует проверки</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Таблица 2в. Consumer и гибридные тесты, доступные жителям СНГ</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Тест / компания</th>
+                <th>Страна</th>
+                <th>Что входит</th>
+                <th>Технология и модель заказа</th>
+                <th>Цена</th>
+                <th>Кому и ограничения</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Genotek (Генотек)</strong></td>
+                <td>Россия</td>
+                <td>Тесты о происхождении, фармакогенетике и предрасположенности к ряду заболеваний; возможны заказ по назначению врача и по собственному желанию</td>
+                <td>Образец слюны/мазка отправляется курьером или почтой, результаты — в личный кабинет (модель direct-to-consumer). Подробности метода не проверялись</td>
+                <td>от 5 000 ₽</td>
+                <td>Consumer-уровень: любой клинически значимый результат подтверждать в клинической лаборатории. Валидация PRS и отчётов о «чертах» для СНГ-популяций не проверялась</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout callout-green">
+          <strong>✅ Краткое резюме по СНГ</strong>
+          Для пациента с отягощённым анамнезом предпочтительна NGS-панель с анализом делеций/дупликаций и консультацией генетика (типа Genetico / Геномед). Точечные тесты на «славянские» основательские варианты (ИНВИТРО и аналоги) — быстрый первый шаг, но только для специальных ситуаций и без вывода «риска нет». Consumer WGS — не выбор для решений.
+        </div>
+      </section>
+
+      <!-- ========== LAB CHECKLIST ========== -->
+      <section id="checklist-lab">
+        <h2><span class="section-icon">✅</span> На что смотреть в любой лаборатории (чек-лист)</h2>
+        <ul class="checklist">
+          <li><strong>Аккредитация:</strong> ISO 15189 или национальный аналог; участие во внешней оценке качества. Для европейских лабораторий это обычно публично проверяется; для лабораторий СНГ — запросить подтверждение у самой лаборатории.</li>
+          <li><strong>Список генов и ограничения:</strong> есть ли CNV-анализ, какие гены проверяются частично, глубина покрытия.</li>
+          <li><strong>Политика по VUS и переклассификации:</strong> репортируются ли VUS, приходит ли обновление при смене класса.</li>
+          <li><strong>Консультация:</strong> входит ли в цену консультация генетика до и после теста; требует ли лаборатория направление врача.</li>
+          <li><strong>Данные и образцы:</strong> где обрабатывается образец, где хранятся данные, можно ли получить сырые данные, передаются ли они третьим лицам (в ЕС — GDPR).</li>
+          <li><strong>Полная стоимость:</strong> цена теста, забор материала, консультация, доставка, повторный анализ.</li>
+        </ul>
+      </section>
+
+      <!-- ========== LIFESTYLE ========== -->
+      <section id="lifestyle">
+        <h2><span class="section-icon">🥗</span> 3. Бытовые и консультативные применения</h2>
+
+        <div class="card card-warning">
+          <div class="card-title">🔴 Важно</div>
+          <p>Тесты «подбора диеты по генам» и «генетики метаболизма» <strong>не имеют доказанной пользы для похудения</strong>; в надёжных источниках это прямо сказано. Обсуждать их с пациентом имеет смысл, но не как основание для назначений. В странах СНГ такие тесты широко продаются как consumer-продукты (в т.ч. отчёты о «предрасположенности к ожирению» и «подходящем виде спорта»); независимых оценок их качества по странам СНГ не найдено.</p>
+        </div>
+
+        <h3>3.1. Что показывают данные</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Источник</th>
+                <th>Что было сделано</th>
+                <th>Результат</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Bayer et al., Nutrients 2020;12:2891</strong></td>
+                <td>Систематический обзор: 27 статей из 8 исследований, 91 SNP в 63 локусах</td>
+                <td>Большинство взаимодействий «генотип × диета» незначимо, редкие значимые не воспроизводятся; нет данных, что это главный фактор успеха лечения ожирения. База узкая (15 публикаций — одно исследование POUNDS Lost)</td>
+              </tr>
+              <tr>
+                <td><strong>DIETFITS, JAMA 2018</strong></td>
+                <td>609 взрослых, 12 месяцев: низкожирная или низкоуглеводная диета; анализ соответствия диеты генотипу (PPARG, ADRB2, FABP2)</td>
+                <td>Соответствие диеты генотипу не дало разницы в потере веса; в среднем −5,3 кг (низкожирная) и −6,0 кг (низкоуглеводная), разница незначима</td>
+              </tr>
+              <tr>
+                <td><strong>Academy of Nutrition and Dietetics, консенсус-отчёт 2021</strong></td>
+                <td>Систематический обзор: 15 публикаций, 12 RCT</td>
+                <td>«Недостаточно данных RCT»; вес, ИМТ и окружность талии не отличались от контроля; рекомендации по диете, основанные только на ДНК, не отражают персонализированного питания</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>3.2. Что можно и нельзя отнести к «метаболизму»</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Тип теста</th>
+                <th>Доказательная база</th>
+                <th>Практический вывод</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>«Диета по генам», панели SNP (FTO, PPARG, ADRB2, FABP2 и т.п.)</td>
+                <td>Слабая / отрицательная</td>
+                <td><span class="badge badge-red">Не назначать</span> для похудения; не менять диету по результату</td>
+              </tr>
+              <tr>
+                <td>Генетика «скорости метаболизма», реакции на нагрузку (ACTN3, ACE и т.п.)</td>
+                <td>В проверенных источниках подтверждения пользы не найдено</td>
+                <td><span class="badge badge-gray">Считать недоказанным</span>; для плана тренировок не использовать</td>
+              </tr>
+              <tr>
+                <td>PRS ожирения</td>
+                <td>Один из 10 PRS в eMERGE (Nat Med 2024); клиническая польза не показана</td>
+                <td><span class="badge badge-gray">Только в рамках исследования</span>; не рутинно</td>
+              </tr>
+              <tr>
+                <td>Моногенные гены тяжёлого раннего ожирения (MC4R, LEPR)</td>
+                <td>Клиническая генетика — общеизвестно</td>
+                <td><span class="badge badge-green">Обоснованный выбор</span> при ожирении с детства/раннего возраста и семейным анамнезом — через генетика, не через consumer-тест</td>
+              </tr>
+              <tr>
+                <td>Семейная гиперхолестеринемия (LDLR, APOB, PCSK9)</td>
+                <td>Клинические панели по кардиогенетике/липидам; гены входят в ACMG SF. Национальные программы FH, руководства EAS/ESC</td>
+                <td><span class="badge badge-green">Разумно</span> при очень высоком ХС ЛПНП и семейном анамнезе — это не «питание по генам», а диагностика</td>
+              </tr>
+              <tr>
+                <td>PGx (лекарства)</td>
+                <td>Есть для отдельных пар «ген — препарат» (CPIC/DPWG)</td>
+                <td>См. раздел 1.3</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>3.3. Хочу похудеть по генам — алгоритм ответа</h3>
+        <div class="algo-step">
+          <div class="algo-num">1</div>
+          <div class="algo-body">ИМТ / окружность талии, давление, глюкоза, липиды, лекарства, сон, семейный анамнез ожирения и сердечно-сосудистых болезней.</div>
+        </div>
+        <div class="algo-step">
+          <div class="algo-num">2</div>
+          <div class="algo-body"><strong>Питание</strong>, которое пациент может держать долго (в DIETFITS оба варианта дали сопоставимый эффект), активность, сон, наблюдение и поведенческая поддержка.</div>
+        </div>
+        <div class="algo-step">
+          <div class="algo-num">3</div>
+          <div class="algo-body">Если пациент всё равно хочет тест: это его выбор. Можно попросить у компании peer-reviewed доказательства к каждой связи «ген — питание», проверить аккредитацию лаборатории и наличие генетического консультанта.</div>
+        </div>
+        <div class="algo-step">
+          <div class="algo-num">4</div>
+          <div class="algo-body">При тяжёлом ожирении с раннего возраста или семейной картине — направить к генетику / эндокринологу.</div>
+        </div>
+
+        <h3>3.4. Что обязательно озвучить пациенту</h3>
+        <div class="card card-orange">
+          <ul>
+            <li>Рисковый аллель <strong>не гарантирует</strong> болезнь, а «хороший» результат <strong>не даёт защиты</strong>; многие тесты смотрят лишь несколько SNP.</li>
+            <li>Наука меняется: выводы могут быть пересмотрены.</li>
+            <li>Риски: фальшивое обнадёживание или фатализм («у меня ген ожирения»), лишние ограничения в питании, расходы, тревога, передача данных третьим лицам.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ========== ALGORITHM ========== -->
+      <section id="algorithm">
+        <h2><span class="section-icon">🧭</span> 4. Алгоритм приёма</h2>
+
+        <div class="algo-step">
+          <div class="algo-num">1</div>
+          <div class="algo-body">
+            <strong>Собрать 3-поколенный семейный анамнез</strong><br>
+            Рак (возраст дебюта, орган, двусторонность), внезапная смерть, кардиомиопатии, аневризмы, очень высокий холестерин.
+          </div>
+        </div>
+        <div class="algo-step">
+          <div class="algo-num">2</div>
+          <div class="algo-body">
+            <strong>Определить цель</strong><br>
+            (а) Есть семейная мутация → тест на неё<br>
+            (б) Отягощённый анамнез → клиническая панель (рак ± сердце)<br>
+            (в) Принимает / будет принимать лекарства с CPIC/DPWG → PGx<br>
+            (г) «Хочу всё знать» → предтестовая консультация; WES/WGS только после обсуждения VUS и вторичных находок
+          </div>
+        </div>
+        <div class="algo-step">
+          <div class="algo-num">3</div>
+          <div class="algo-body">
+            <strong>До теста — информированное согласие</strong><br>
+            Возможные результаты (P/LP, VUS, негативный), влияние на родственников.
+          </div>
+        </div>
+        <div class="algo-step">
+          <div class="algo-num">4</div>
+          <div class="algo-body">
+            <strong>Выбрать лабораторию</strong><br>
+            Аккредитованная (ISO 15189 или национальный аналог), ACMG/AMP-классификация, указанные ограничения по генам, консультация генетика.<br>
+            <em>Европа:</em> служба клинической генетики или аккредитованная частная лаборатория.<br>
+            <em>СНГ:</em> крупная лаборатория с NGS и возможностью консультации генетика.
+          </div>
+        </div>
+        <div class="algo-step">
+          <div class="algo-num">5</div>
+          <div class="algo-body">
+            <strong>После теста</strong><br>
+            <span class="badge badge-red">P/LP</span> → генетик + профильное наблюдение + каскадное тестирование родственников<br>
+            <span class="badge badge-gray">VUS</span> → тактика по семейному анамнезу, не по результату<br>
+            <span class="badge badge-green">Негативный</span> → общие скрининги по возрасту и анамнезу<br>
+            <span class="badge badge-blue">PGx</span> → внести в карту
+          </div>
+        </div>
+        <div class="algo-step">
+          <div class="algo-num">6</div>
+          <div class="algo-body">
+            <strong>Не используйте PRS</strong> для решений о скрининге вне исследования.<br>
+            <strong>Consumer-результат</strong> всегда подтверждайте клиническим тестом.
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== SOURCES ========== -->
+      <section id="sources">
+        <h2><span class="section-icon">📚</span> Источники и ключевые ссылки</h2>
+        <div class="card">
+          <ul>
+            <li>ACMG SF v3.3 — Secondary Findings list</li>
+            <li>NCI PDQ «Cancer Genetics» (шесть шагов консультации)</li>
+            <li>CPIC / DPWG — фармакогенетические рекомендации</li>
+            <li>ESHG — позиции по вторичным находкам</li>
+            <li>ENIGMA — классификация вариантов BRCA1/2</li>
+            <li>ACGS (UK) — национальные уточнения классификации</li>
+            <li>U-PGx — европейское исследование предэмптивной PGx</li>
+            <li>eMERGE (Nature Medicine 2024) — PRS в исследовательской программе</li>
+            <li>Bayer et al., Nutrients 2020 — систематический обзор «генотип × диета»</li>
+            <li>DIETFITS, JAMA 2018</li>
+            <li>Academy of Nutrition and Dietetics, consensus report 2021</li>
+            <li>Kilbride 2024 — опрос пользователей consumer-тестов</li>
+            <li>BMC Genomics 2024 — слюна vs кровь для WES/WGS</li>
+            <li>David &amp; Palaniappan 2025 — редакционная статья о PRS</li>
+            <li>IVDR 2017/746 — регламент ЕС о диагностических изделиях</li>
+            <li>EAS/ESC — руководства по семейной гиперхолестеринемии</li>
+          </ul>
+        </div>
+      </section>
+
+    </div><!-- /content -->
+
+    <footer>
+      <p>Практическое руководство для врачей превентивной медицины</p>
+      <p style="margin-top:0.4rem;font-size:0.8rem;opacity:0.7;">Генетическое тестирование бессимптомных взрослых · Европа и СНГ</p>
+    </footer>
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<script>
+  // Mobile menu
+  const menuToggle = document.getElementById('menuToggle');
+  const sidebar = document.getElementById('sidebar');
+  menuToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('open');
+  });
+
+  // Close sidebar on link click (mobile)
+  document.querySelectorAll('.nav-list a').forEach(link => {
+    link.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+    });
+  });
+
+  // Accordion
+  function toggleAcc(header) {
+    const item = header.parentElement;
+    const wasOpen = item.classList.contains('open');
+    // Optional: close others in same accordion
+    // item.parentElement.querySelectorAll('.acc-item').forEach(i => i.classList.remove('open'));
+    item.classList.toggle('open', !wasOpen);
+  }
+
+  // Active nav highlight on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-list a');
+
+  function highlightNav() {
+    let current = '';
+    sections.forEach(section => {
+      const top = section.offsetTop - 120;
+      if (window.scrollY >= top) {
+        current = section.getAttribute('id');
+      }
+    });
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === '#' + current) {
+        link.classList.add('active');
+      }
+    });
+  }
+
+  window.addEventListener('scroll', highlightNav);
+  highlightNav();
+
+  // Open first accordion items by default for better UX
+  document.querySelectorAll('.accordion .acc-item').forEach((item, i) => {
+    if (i < 2) item.classList.add('open');
+  });
+</script>
+</body>
+</html>
